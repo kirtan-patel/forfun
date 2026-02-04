@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be My Valentine?</title>
+    <title>The Social Season's Greatest Question</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&display=swap');
+
         :root {
-            --bg-color: #ffdeeb;
+            --bg-color: #fcf8f0;
+            --bridgerton-blue: #7ba7bc;
+            --gold: #c5a059;
         }
 
         body {
@@ -17,53 +21,68 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Playfair Display', serif;
             background-color: var(--bg-color);
-            transition: background-color 0.5s ease;
+            transition: background-color 0.8s ease;
             overflow: hidden;
+            color: #333;
         }
 
-        /* The Audio Fix Overlay */
+        /* Lady Whistledown's Column Overlay */
         #start-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #ffdeeb;
+            background-color: #fdfaf5;
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             cursor: pointer;
+            border: 15px double var(--gold);
+            box-sizing: border-box;
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 1.5s ease-in;
         }
 
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         #start-overlay h2 {
-            color: #d63384;
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            font-family: 'Great Vibes', cursive;
+            color: var(--gold);
+            font-size: 3.5rem;
+            margin-bottom: 0;
         }
 
         .container {
             text-align: center;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border: 2px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            max-width: 90%;
+            position: relative;
         }
 
         #display-image {
             width: 300px;
             height: 300px;
             object-fit: cover;
-            border-radius: 15px;
+            border: 4px solid var(--bridgerton-blue);
             margin-bottom: 20px;
         }
 
         h1 {
-            color: #d63384;
+            color: #2c3e50;
+            font-size: 1.6rem;
             margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .buttons {
@@ -74,44 +93,54 @@
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
+            padding: 12px 25px;
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid rgba(0,0,0,0.1);
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
         }
 
-        #yes-btn {
-            background-color: #4cd137;
-            color: white;
-            z-index: 10; /* Keeps Yes on top as it grows */
+        #yes-btn { background-color: var(--bridgerton-blue); color: white; z-index: 10; }
+        #no-btn { background-color: #e74c3c; color: white; }
+
+        .hidden { display: none !important; }
+
+        /* Rose Confetti Style */
+        .rose {
+            position: absolute;
+            top: -50px;
+            font-size: 2rem;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear forwards;
         }
 
-        #no-btn {
-            background-color: #e84118;
-            color: white;
-        }
-
-        .hidden {
-            display: none !important;
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
 
     <div id="start-overlay">
-        <h2>You have a message! ❤️</h2>
-        <p>Click to open</p>
+        <h2>Dearest Gentle Reader...</h2>
+        <p style="font-style: italic; font-size: 1.4rem; max-width: 500px;">
+            The ton is abuzz with the latest gossip. It seems one particular member of society has a question of the utmost importance...
+        </p>
+        <p style="margin-top: 30px; font-size: 0.8rem; color: var(--gold); letter-spacing: 2px;">TAP TO UNCOVER THE SCANDAL</p>
     </div>
 
     <div class="container">
         <img id="display-image" src="./image/catFlower.png" alt="Valentine Image">
-        <h1 id="question-text">Will you be my Valentine?</h1>
+        <h1 id="question-text">Will you do me the honor of being my Valentine?</h1>
         
         <div class="buttons">
-            <button id="yes-btn">YES</button>
-            <button id="no-btn">NO</button>
+            <button id="yes-btn">I Shall</button>
+            <button id="no-btn">I Decline</button>
         </div>
     </div>
 
@@ -125,57 +154,62 @@
         const yesBtn = document.getElementById('yes-btn');
         const noBtn = document.getElementById('no-btn');
         const audioPlayer = document.getElementById('audio-player');
-        const body = document.body;
         const overlay = document.getElementById('start-overlay');
 
         const stages = {
-            1: { img: './image/catFlower.png', audio: './audio/whisle.mp3', bg: '#ffdeeb' }, 
-            2: { img: './image/sadCat.png', audio: './audio/crying.mp3', bg: '#a4b0be' }, 
-            3: { img: './image/catGun.png', audio: './audio/Gun.mp3', bg: '#57606f' }, 
-            4: { img: './image/catGunMe.png', audio: './audio/GunMe.mp3', bg: '#2f3542' }, 
-            5: { img: './image/happyCat.png', audio: './audio/Happy.mp3', bg: '#feca57' }
+            1: { img: './image/catFlower.png', audio: './audio/whisle.mp3', bg: '#fcf8f0' }, 
+            2: { img: './image/sadCat.png', audio: './audio/crying.mp3', bg: '#dfe6e9' }, 
+            3: { img: './image/catGun.png', audio: './audio/Gun.mp3', bg: '#b2bec3' }, 
+            4: { img: './image/catGunMe.png', audio: './audio/GunMe.mp3', bg: '#636e72' }, 
+            5: { img: './image/happyCat.png', audio: './audio/Happy.mp3', bg: '#7ba7bc' }
         };
 
-        // When she clicks the overlay, it disappears and audio 1 plays
         overlay.addEventListener('click', () => {
             overlay.classList.add('hidden');
             updateStage(1);
         });
 
+        function createRose() {
+            const rose = document.createElement('div');
+            rose.classList.add('rose');
+            rose.innerText = '🌹'; // You can change this to 🤍 or 🌸
+            rose.style.left = Math.random() * 100 + 'vw';
+            rose.style.animationDuration = Math.random() * 2 + 3 + 's';
+            rose.style.opacity = Math.random();
+            document.body.appendChild(rose);
+            setTimeout(() => rose.remove(), 5000);
+        }
+
         function updateStage(s) {
             stage = s;
             imgElement.src = stages[s].img;
-            
-            // Set source and play
             audioPlayer.src = stages[s].audio;
-            audioPlayer.load(); // Ensures the new source is loaded
-            audioPlayer.play().catch(e => console.error("Audio failed:", e));
+            audioPlayer.load();
+            audioPlayer.play().catch(e => console.log("Audio play blocked"));
+            document.body.style.backgroundColor = stages[s].bg;
 
-            body.style.backgroundColor = stages[s].bg;
-
-            if (s === 4) {
-                noBtn.classList.add('hidden'); 
-            }
+            if (s === 4) { noBtn.classList.add('hidden'); }
             if (s === 5) {
                 noBtn.classList.add('hidden');
-                document.getElementById('question-text').innerText = "YAY! See you soon! ❤️";
                 yesBtn.classList.add('hidden');
+                document.getElementById('question-text').innerHTML = "A Match Made in Heaven!<br>Truly the Diamond of the Season. ❤️";
+                // Trigger Rose Rain
+                setInterval(createRose, 150);
             }
         }
 
         noBtn.addEventListener('click', () => {
             if (stage < 4) {
                 stage++;
-                yesScale += 0.6; // Slightly faster growth for comedy
+                yesScale += 0.6;
                 yesBtn.style.transform = `scale(${yesScale})`;
+                const texts = ["Will you be my Valentine?", "Surely you jest?", "My heart is wounded!", "Is there no mercy?"];
+                document.getElementById('question-text').innerText = texts[stage-1];
                 updateStage(stage);
             }
         });
 
-        yesBtn.addEventListener('click', () => {
-            updateStage(5);
-        });
-
+        yesBtn.addEventListener('click', () => updateStage(5));
     </script>
 </body>
 </html>
