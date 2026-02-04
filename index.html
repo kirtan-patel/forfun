@@ -28,7 +28,7 @@
             color: #333;
         }
 
-        /* Lady Whistledown's Column Overlay */
+        /* Full Screen Whistledown Curtain */
         #start-overlay {
             position: fixed;
             top: 0;
@@ -41,16 +41,14 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000; /* Higher than everything else */
             cursor: pointer;
             border: 15px double var(--gold);
             box-sizing: border-box;
             text-align: center;
             padding: 20px;
-            animation: fadeIn 1.5s ease-in;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         #start-overlay h2 {
             font-family: 'Great Vibes', cursive;
@@ -59,6 +57,7 @@
             margin-bottom: 0;
         }
 
+        /* Container starts HIDDEN */
         .container {
             text-align: center;
             background: rgba(255, 255, 255, 0.9);
@@ -67,6 +66,15 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             max-width: 90%;
             position: relative;
+            opacity: 0; /* Hidden initially */
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        /* Class to show the container later */
+        .container.reveal {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         #display-image {
@@ -107,7 +115,6 @@
 
         .hidden { display: none !important; }
 
-        /* Rose Confetti Style */
         .rose {
             position: absolute;
             top: -50px;
@@ -118,9 +125,7 @@
         }
 
         @keyframes fall {
-            to {
-                transform: translateY(105vh) rotate(360deg);
-            }
+            to { transform: translateY(105vh) rotate(360deg); }
         }
     </style>
 </head>
@@ -134,7 +139,7 @@
         <p style="margin-top: 30px; font-size: 0.8rem; color: var(--gold); letter-spacing: 2px;">TAP TO UNCOVER THE SCANDAL</p>
     </div>
 
-    <div class="container">
+    <div class="container" id="main-container">
         <img id="display-image" src="./image/catFlower.png" alt="Valentine Image">
         <h1 id="question-text">Will you do me the honor of being my Valentine?</h1>
         
@@ -155,6 +160,7 @@
         const noBtn = document.getElementById('no-btn');
         const audioPlayer = document.getElementById('audio-player');
         const overlay = document.getElementById('start-overlay');
+        const container = document.getElementById('main-container');
 
         const stages = {
             1: { img: './image/catFlower.png', audio: './audio/whisle.mp3', bg: '#fcf8f0' }, 
@@ -164,18 +170,22 @@
             5: { img: './image/happyCat.png', audio: './audio/Happy.mp3', bg: '#7ba7bc' }
         };
 
+        // Click to Reveal Logic
         overlay.addEventListener('click', () => {
-            overlay.classList.add('hidden');
-            updateStage(1);
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                container.classList.add('reveal'); // Reveal the cat and question
+                updateStage(1);
+            }, 800);
         });
 
         function createRose() {
             const rose = document.createElement('div');
             rose.classList.add('rose');
-            rose.innerText = '🌹'; // You can change this to 🤍 or 🌸
+            rose.innerText = '🌹'; 
             rose.style.left = Math.random() * 100 + 'vw';
             rose.style.animationDuration = Math.random() * 2 + 3 + 's';
-            rose.style.opacity = Math.random();
             document.body.appendChild(rose);
             setTimeout(() => rose.remove(), 5000);
         }
@@ -193,7 +203,6 @@
                 noBtn.classList.add('hidden');
                 yesBtn.classList.add('hidden');
                 document.getElementById('question-text').innerHTML = "A Match Made in Heaven!<br>Truly the Diamond of the Season. ❤️";
-                // Trigger Rose Rain
                 setInterval(createRose, 150);
             }
         }
