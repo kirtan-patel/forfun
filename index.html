@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        :root {
+            --bg-color: #ffdeeb;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            transition: background-color 0.5s ease;
+            overflow: hidden;
+        }
+
+        /* The Audio Fix Overlay */
+        #start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffdeeb;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        #start-overlay h2 {
+            color: #d63384;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        #display-image {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #d63384;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        #yes-btn {
+            background-color: #4cd137;
+            color: white;
+            z-index: 10; /* Keeps Yes on top as it grows */
+        }
+
+        #no-btn {
+            background-color: #e84118;
+            color: white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="start-overlay">
+        <h2>You have a message! ❤️</h2>
+        <p>Click to open</p>
+    </div>
+
+    <div class="container">
+        <img id="display-image" src="./image/catFlower.png" alt="Valentine Image">
+        <h1 id="question-text">Will you be my Valentine?</h1>
+        
+        <div class="buttons">
+            <button id="yes-btn">YES</button>
+            <button id="no-btn">NO</button>
+        </div>
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+        let stage = 1;
+        let yesScale = 1;
+
+        const imgElement = document.getElementById('display-image');
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const audioPlayer = document.getElementById('audio-player');
+        const body = document.body;
+        const overlay = document.getElementById('start-overlay');
+
+        const stages = {
+            1: { img: './image/catFlower.png', audio: './audio/whisle.mp3', bg: '#ffdeeb' }, 
+            2: { img: './image/sadCat.png', audio: './audio/crying.mp3', bg: '#a4b0be' }, 
+            3: { img: './image/catGun.png', audio: './audio/Gun.mp3', bg: '#57606f' }, 
+            4: { img: './image/catGunMe.png', audio: './audio/GunMe.mp3', bg: '#2f3542' }, 
+            5: { img: './image/happyCat.png', audio: './audio/Happy.mp3', bg: '#feca57' }
+        };
+
+        // When she clicks the overlay, it disappears and audio 1 plays
+        overlay.addEventListener('click', () => {
+            overlay.classList.add('hidden');
+            updateStage(1);
+        });
+
+        function updateStage(s) {
+            stage = s;
+            imgElement.src = stages[s].img;
+            
+            // Set source and play
+            audioPlayer.src = stages[s].audio;
+            audioPlayer.load(); // Ensures the new source is loaded
+            audioPlayer.play().catch(e => console.error("Audio failed:", e));
+
+            body.style.backgroundColor = stages[s].bg;
+
+            if (s === 4) {
+                noBtn.classList.add('hidden'); 
+            }
+            if (s === 5) {
+                noBtn.classList.add('hidden');
+                document.getElementById('question-text').innerText = "YAY! See you soon! ❤️";
+                yesBtn.classList.add('hidden');
+            }
+        }
+
+        noBtn.addEventListener('click', () => {
+            if (stage < 4) {
+                stage++;
+                yesScale += 0.6; // Slightly faster growth for comedy
+                yesBtn.style.transform = `scale(${yesScale})`;
+                updateStage(stage);
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            updateStage(5);
+        });
+
+    </script>
+</body>
+</html>
